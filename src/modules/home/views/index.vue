@@ -40,11 +40,10 @@ export default {
   },
   methods: {
     handleSelect (key, keyPath) {
-      console.log(key, keyPath)
-      let index = parseInt(key[0])
-      console.log('index', index)
+      console.log('key', key)
+      console.log('keyPath', keyPath)
       let length = this.currentList.length
-      this.currentList.splice(0, length, ...this.list[index - 1].twoLevelList)
+      this.currentList.splice(0, length, ...this.list[key - 1].twoLevelList)
       console.log('this.currentList', this.currentList)
     }
   }
