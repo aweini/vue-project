@@ -11,7 +11,7 @@
         <div>
           <div class="bottom clearfix">
             <time class="time">{{o.name}}</time>
-            <el-button type="text" class="button" @click.native="more(o.url)">more!!!!!</el-button>
+            <el-button type="text" class="button" @click.native="more(o.url)">more</el-button>
           </div>
         </div>
       </el-card>

@@ -180,14 +180,14 @@ if (config.build.usingDll) {
     new webpack.DllReferencePlugin({
       context: __dirname,
       manifest: require('../dll/vendors-manifest.json')
-    })
-    // new AddAssetHtmlPlugin([{
-    //   filepath: path.resolve(__dirname, '../dll/vendors.dll.js'),
-    //   outputPath: utils.assetsPath('dll'),
-    //   // publicPath: path.resolve(config.build.assetsPublicPath, config.build.assetsSubDirectory, 'dll'),
-    //   publicPath: 'static/dll',
-    //   includeSourcemap: false
-    // }])
+    }),
+    new AddAssetHtmlPlugin([{
+      filepath: path.resolve(__dirname, '../dll/vendors.dll.js'),
+      outputPath: utils.assetsPath('dll'),
+      // publicPath: path.resolve(config.build.assetsPublicPath, config.build.assetsSubDirectory, 'dll'),
+      publicPath: 'static/dll',
+      includeSourcemap: false
+    }])
   )
 }
 if (config.build.productionGzip) {

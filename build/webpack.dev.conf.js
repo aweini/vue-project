@@ -86,7 +86,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     ])
   ]
 })
-
+// element-ui不能按需加载
 if (config.build.usingDll) {
   devWebpackConfig.plugins.push(
     new webpack.DllReferencePlugin({

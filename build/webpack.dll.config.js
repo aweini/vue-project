@@ -10,8 +10,7 @@ module.exports = {
         vendors: [
             'vue',
             'vuex',
-            'vue-router',
-            'element-ui'
+            'vue-router'
         ]
     },
 

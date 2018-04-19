@@ -41,7 +41,7 @@ module.exports = {
     cacheBusting: true,
 
     cssSourceMap: true,
-    usingDll: true
+    usingDll: false
   },
 
   build: {
@@ -67,7 +67,7 @@ module.exports = {
     // npm install --save-dev compression-webpack-plugin
     productionGzip: false,
     productionGzipExtensions: ['js', 'css'],
-    usingDll: true,
+    usingDll: false,
     // Run the build command with an extra argument to
     // View the bundle analyzer report after build finishes:
     // `npm run build --report`
