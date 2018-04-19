@@ -3,11 +3,13 @@ export default{
     name: 'home',
     index: '1',
     twoLevelList: [{
-      name: 'cat',
-      image: '/static/img/cat1.jpeg'
+      name: 'cat canvas',
+      image: '/static/img/cat1.jpeg',
+      url: '/animals/canvas'
     }, {
-      name: 'dog',
-      image: '/static/img/dog1.jpeg'
+      name: 'dog svg',
+      image: '/static/img/dog1.jpeg',
+      url: '/animals/svg'
     }, {
       name: 'lily',
       image: '/static/img/lily1.jpeg'

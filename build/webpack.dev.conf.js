@@ -9,6 +9,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
+const HappyPack = require('happypack')
+const happyThreadPool = HappyPack.ThreadPool({ size: 5 })
+const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
@@ -45,6 +48,22 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     }
   },
   plugins: [
+    new HappyPack({
+      id: 'vue',
+      loaders: [{
+        loader: 'vue-loader',
+        options: require('./vue-loader.conf')
+      }],
+      threadPool: happyThreadPool,
+    }),
+    new HappyPack({
+      // 用唯一的标识符 id 来代表当前的 HappyPack 是用来处理一类特定的文件
+      id: 'babel',
+      // 如何处理 .js 文件，用法和 Loader 配置中一样
+      loaders: ['babel-loader?cacheDirectory'],
+      // 使用共享进程池中的子进程去处理任务
+      threadPool: happyThreadPool,
+    }),
     new webpack.DefinePlugin({
       'process.env': require('../config/dev.env')
     }),
@@ -67,6 +86,22 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     ])
   ]
 })
+
+if (config.build.usingDll) {
+  devWebpackConfig.plugins.push(
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require('../dll/vendors-manifest.json')
+    }),
+    new AddAssetHtmlPlugin([{
+      filepath: path.resolve(__dirname, '../dll/vendors.dll.js'),
+      outputPath: utils.assetsPath('dll'),
+      // publicPath: path.resolve(config.build.assetsPublicPath, config.build.assetsSubDirectory, 'dll'),
+      publicPath: 'static/dll',
+      includeSourcemap: false
+    }])
+  )
+}
 
 module.exports = new Promise((resolve, reject) => {
   portfinder.basePort = process.env.PORT || config.dev.port

@@ -3,7 +3,8 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
-
+const HappyPack = require('happypack')
+const happyThreadPool = HappyPack.ThreadPool({ size: 5 })
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
@@ -43,12 +44,12 @@ module.exports = {
       ...(config.dev.useEslint ? [createLintingRule()] : []),
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: vueLoaderConfig
+        loader: 'happypack/loader?id=vue'
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
+        use: ['happypack/loader?id=babel'],
+        // loader: 'babel-loader',
         include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
       },
       {

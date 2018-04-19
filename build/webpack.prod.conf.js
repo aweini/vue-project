@@ -10,6 +10,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const os = require('os');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const HappyPack = require('happypack')
+const happyThreadPool = HappyPack.ThreadPool({ size: 5 })
+const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 
 const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
@@ -30,10 +35,27 @@ const webpackConfig = merge(baseWebpackConfig, {
     chunkFilename: utils.assetsPath('js/[name].[chunkhash].js')
   },
   plugins: [
+    new HappyPack({
+      id: 'vue',
+      loaders: [{
+        loader: 'vue-loader',
+        options: require('./vue-loader.conf')
+      }],
+      threadPool: happyThreadPool,
+    }),
+    new HappyPack({
+      // 用唯一的标识符 id 来代表当前的 HappyPack 是用来处理一类特定的文件
+      id: 'babel',
+      // 如何处理 .js 文件，用法和 Loader 配置中一样
+      loaders: ['babel-loader?cacheDirectory'],
+      // 使用共享进程池中的子进程去处理任务
+      threadPool: happyThreadPool,
+    }),
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env
     }),
+    // parallel: true 多核压缩
     new UglifyJsPlugin({
       uglifyOptions: {
         compress: {
@@ -119,10 +141,55 @@ const webpackConfig = merge(baseWebpackConfig, {
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ]),
+    new BundleAnalyzerPlugin({
+      // Can be `server`, `static` or `disabled`.
+      // In `server` mode analyzer will start HTTP server to show bundle report.
+      // In `static` mode single HTML file with bundle report will be generated.
+      // In `disabled` mode you can use this plugin to just generate Webpack Stats JSON file by setting `generateStatsFile` to `true`.
+      analyzerMode: 'server',
+      // Host that will be used in `server` mode to start HTTP server.
+      analyzerHost: '127.0.0.1',
+      // Port that will be used in `server` mode to start HTTP server.
+      analyzerPort: config.build.bundleAnalyzerReport,
+      // Path to bundle report file that will be generated in `static` mode.
+      // Relative to bundles output directory.
+      reportFilename: 'report.html',
+      // Module sizes to show in report by default.
+      // Should be one of `stat`, `parsed` or `gzip`.
+      // See "Definitions" section for more information.
+      defaultSizes: 'parsed',
+      // Automatically open report in default browser
+      openAnalyzer: true,
+      // If `true`, Webpack Stats JSON file will be generated in bundles output directory
+      generateStatsFile: false,
+      // Name of Webpack Stats JSON file that will be generated if `generateStatsFile` is `true`.
+      // Relative to bundles output directory.
+      statsFilename: 'stats.json',
+      // Options for `stats.toJson()` method.
+      // For example you can exclude sources of your modules from stats file with `source: false` option.
+      // See more options here: https://github.com/webpack/webpack/blob/webpack-1/lib/Stats.js#L21
+      statsOptions: null,
+      // Log level. Can be 'info', 'warn', 'error' or 'silent'.
+      logLevel: 'info'
+    })
   ]
 })
-
+if (config.build.usingDll) {
+  webpackConfig.plugins.push(
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require('../dll/vendors-manifest.json')
+    })
+    // new AddAssetHtmlPlugin([{
+    //   filepath: path.resolve(__dirname, '../dll/vendors.dll.js'),
+    //   outputPath: utils.assetsPath('dll'),
+    //   // publicPath: path.resolve(config.build.assetsPublicPath, config.build.assetsSubDirectory, 'dll'),
+    //   publicPath: 'static/dll',
+    //   includeSourcemap: false
+    // }])
+  )
+}
 if (config.build.productionGzip) {
   const CompressionWebpackPlugin = require('compression-webpack-plugin')
 

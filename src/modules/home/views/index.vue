@@ -11,7 +11,7 @@
         <div>
           <div class="bottom clearfix">
             <time class="time">{{o.name}}</time>
-            <el-button type="text" class="button">more</el-button>
+            <el-button type="text" class="button" @click.native="more(o.url)">more!!!!!</el-button>
           </div>
         </div>
       </el-card>
@@ -46,6 +46,10 @@ export default {
       let length = this.currentList.length
       this.currentList.splice(0, length, ...this.list[key - 1].twoLevelList)
       console.log('this.currentList', this.currentList)
+    },
+    more (url) {
+      console.log('more......', url)
+      this.$router.push(url)
     }
   }
 }
