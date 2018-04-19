@@ -1,6 +1,6 @@
 <template>
 <div class="home">
-  <el-menu class="el-menu-demo" mode="horizontal" @select="handleSelect">
+  <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
     <el-menu-item v-for="(item, index) in list" :key="index" :index="item.index">{{item.name}}</el-menu-item>
   </el-menu>
 
@@ -26,7 +26,8 @@ export default {
   data () {
     return {
       name: 'home',
-      currentList: []
+      currentList: [],
+      activeIndex: '1'
     }
   },
   computed: {
